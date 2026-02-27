@@ -1,7 +1,7 @@
 # Project Context
 
 ## Current Status
-Test runs complete. Two v0 template ports validated end-to-end. Ready for competition day.
+Mock competition run in progress on `codex/mock-run-2026-02-27`. Milestone 4 polish is complete for prompt "Send Money in Lisbon", and build passes.
 
 ## Live URL
 - **Production (main):** https://vibe-challenge-2026.vercel.app
@@ -20,11 +20,38 @@ Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + Vercel
 ## Competition
 - **Date:** Wednesday, March 4, 2026, 15:45–17:00
 - **Format:** 1-hour live coding, screen shared on Google Meet
-- **Prompt:** TBD (revealed live on stage)
+- **Prompt:** Rehearsal prompt in use: "Build a Send Money in Lisbon demo app with fake wallet flow"
 - **Deliverable:** Public website URL for co-workers to try and vote on
 
 ## What Is In Progress
-Nothing — project is in standby until competition day.
+Sample run execution for the Lisbon transfer demo prompt (currently at final pre-deploy stage).
+
+## Latest Mock Run Update (Feb 27, 2026)
+- Branch: `codex/mock-run-2026-02-27` (main intentionally preserved)
+- Phase 1 completed: prompt parsed, constraints and success criteria captured, 60-minute milestone plan defined
+- Phase 2 started:
+  - Milestone 1 completed in `app/page.tsx`
+  - Added Lisbon-themed app shell
+  - Added fake wallet connect/disconnect UI with randomized mock address
+  - Added wallet status panel (state, short address, demo balance)
+  - Milestone 2 completed in `app/page.tsx`
+  - Added recipient + amount form with inline validation and quick amount chips
+  - Added mocked transfer submission state with generated reference ID
+  - Milestone 3 completed in `app/page.tsx`
+  - Added three-step success timeline (`Queued` → `Validating` → `Settled`)
+  - Added timed timeline progression with per-step timestamps
+  - Added in-flight state handling and "New Transfer" reset action after settlement
+  - Milestone 4 completed in `app/page.tsx`
+  - Improved helper-text logic (single clear status message)
+  - Added quick recipient chips for faster demo flow
+  - Added transfer preview details (fee, ETA, total debit)
+  - Added timeline progress bar and disabled editing while transfer is in flight
+  - Live local preview verified at `http://localhost:3001`
+- Validation:
+  - `npm run build` succeeded on branch after Milestone 1 changes
+  - `npm run build` succeeded again after Milestone 2 changes
+  - `npm run build` succeeded again after Milestone 3 changes
+  - `npm run build` succeeded again after Milestone 4 changes
 
 ## Key Learnings from Test Runs
 
@@ -59,7 +86,5 @@ The zip download from v0 only contains scaffolding (globals.css, layout, shadcn 
 - `next.config.ts` — Unsplash remote patterns
 
 ## Next Immediate Goals
-1. Competition starts — receive the prompt
-2. User shares a v0 template link → Claude extracts source via browser
-3. Build and iterate rapidly, push to `main` for production deploys
-4. Push frequently for continuous deployment
+1. Push branch and verify preview URL
+2. Decide if this run should be merged/cherry-picked later or kept as rehearsal-only
