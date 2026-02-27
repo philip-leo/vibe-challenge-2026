@@ -62,6 +62,12 @@ Updated `app/page.tsx` with:
 - `npm run build` passed again after Milestone 3 changes
 - `npm run build` passed again after Milestone 4 changes
 
+## Source Control
+- Commit: `4c8b61b` — "Mock run: complete Lisbon send-money flow with timeline polish"
+- Branch pushed: `origin/codex/mock-run-2026-02-27`
+- GitHub compare/PR helper:
+  - `https://github.com/philip-leo/vibe-challenge-2026/pull/new/codex/mock-run-2026-02-27`
+
 ## Next Steps
-1. Push branch and verify preview deploy URL
+1. Verify preview deploy URL once Vercel finishes branch deployment
 2. Optional final pass on copy for stage storytelling

@@ -1,7 +1,7 @@
 # Project Context
 
 ## Current Status
-Mock competition run in progress on `codex/mock-run-2026-02-27`. Milestone 4 polish is complete for prompt "Send Money in Lisbon", and build passes.
+Mock competition run complete on `codex/mock-run-2026-02-27`. Milestones 1-4 plus final build/push are done for prompt "Send Money in Lisbon".
 
 ## Live URL
 - **Production (main):** https://vibe-challenge-2026.vercel.app
@@ -24,7 +24,7 @@ Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + Vercel
 - **Deliverable:** Public website URL for co-workers to try and vote on
 
 ## What Is In Progress
-Sample run execution for the Lisbon transfer demo prompt (currently at final pre-deploy stage).
+Sample run execution complete for the Lisbon transfer demo prompt; awaiting preview URL verification from Vercel branch deploy.
 
 ## Latest Mock Run Update (Feb 27, 2026)
 - Branch: `codex/mock-run-2026-02-27` (main intentionally preserved)
@@ -52,6 +52,8 @@ Sample run execution for the Lisbon transfer demo prompt (currently at final pre
   - `npm run build` succeeded again after Milestone 2 changes
   - `npm run build` succeeded again after Milestone 3 changes
   - `npm run build` succeeded again after Milestone 4 changes
+  - Branch changes committed as `4c8b61b`
+  - Branch pushed: `origin/codex/mock-run-2026-02-27`
 
 ## Key Learnings from Test Runs
 
@@ -86,5 +88,5 @@ The zip download from v0 only contains scaffolding (globals.css, layout, shadcn 
 - `next.config.ts` — Unsplash remote patterns
 
 ## Next Immediate Goals
-1. Push branch and verify preview URL
+1. Confirm preview URL availability on Vercel for `codex/mock-run-2026-02-27`
 2. Decide if this run should be merged/cherry-picked later or kept as rehearsal-only
