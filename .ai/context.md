@@ -1,7 +1,7 @@
 # Project Context
 
 ## Current Status
-Test runs complete. Two v0 template ports validated end-to-end. Ready for competition day.
+Dual-track prep implemented. `main` stays minimal and `codex/ui-kit-prep` now contains a ready-to-switch UI kit + v0 extractor workflow.
 
 ## Live URL
 - **Production (main):** https://vibe-challenge-2026.vercel.app
@@ -13,9 +13,9 @@ https://github.com/philip-leo/vibe-challenge-2026
 ## Stack
 Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + Vercel
 
-## Dependencies Installed (test-run branch)
+## Dependencies Installed (ui-kit-prep branch)
 - shadcn/ui: class-variance-authority, clsx, tailwind-merge, @radix-ui/react-slot, lucide-react
-- Three.js: three, @react-three/fiber, @react-three/drei, @types/three
+- Three.js intentionally not preinstalled on this prep branch (kept optional by design)
 
 ## Competition
 - **Date:** Wednesday, March 4, 2026, 15:45–17:00
@@ -24,7 +24,27 @@ Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + Vercel
 - **Deliverable:** Public website URL for co-workers to try and vote on
 
 ## What Is In Progress
-Nothing — project is in standby until competition day.
+Nothing active. Prep branch is ready; waiting for competition-day prompt.
+
+## Dual-Track Prep (Feb 27, 2026)
+- **Branch created:** `codex/ui-kit-prep` (from `main`)
+- **Lean UI baseline added:**
+  - shadcn deps installed
+  - `lib/utils.ts` (`cn`)
+  - `components/ui/button.tsx`, `components/ui/card.tsx`
+  - Tailwind v4 + shadcn token setup in `app/globals.css`
+  - Font CDN links in `app/layout.tsx`
+  - `next.config.ts` remote image patterns (Unsplash/Pexels/Pixabay)
+- **Extractor added:**
+  - `scripts/v0-extract.mjs`
+  - `npm run v0:extract -- <url> [--out] [--slug] [--method auto|http|playwright]`
+  - Default `auto` mode: HTTP attempt then Playwright fallback
+  - Dumps files to `output/v0/<slug>/` with `metadata.json`
+- **Competition prompts documented:** `.ai/competition-playbook.md` and linked from `AGENTS.md`
+- **Validation results:**
+  - `npm run build` passes
+  - `npm run v0:extract -- ... --method auto` succeeds on `logo-particles` template (2 files extracted)
+  - `npm run v0:extract -- ... --method http` fails with actionable guidance as intended
 
 ## Key Learnings from Test Runs
 

@@ -47,4 +47,5 @@ This is a **timed competition**. The following rules override normal best practi
 ## Context Files
 
 - `.ai/context.md` — Current project state. Update during the competition.
+- `.ai/competition-playbook.md` — Copy-paste prompts for kickoff, intake planning, checkpoint, and T-15 recovery.
 - `CLAUDE.md` — Pointer for Claude Code / Codex.
