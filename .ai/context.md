@@ -1,7 +1,22 @@
 # Project Context
 
 ## Current Status
-Fishing game is live on `main`. Visual polish pass shipped locally: pure timing restored + Mempool Aquarium + ZK Ledger.
+Fishing game is live on `main`. New centered pond scene is implemented locally and build-passing.
+
+## Latest Session (Mar 4, 2026, 16:28 WET)
+- Updated visual direction without changing mechanics:
+  - kept pure timing state machine exactly as-is
+  - removed any "zone required" messaging
+- Replaced global ambient fish background with a **centered pond scene card**:
+  - pixel-style caster and watcher figures at pond edges
+  - cast line and bobber visualization over the pond
+  - subtle fish swim animation contained within the pond
+- Kept existing gameplay + control flow intact:
+  - `Cast` / `Catch!` behavior unchanged
+  - bite window logic unchanged
+  - ZK Ledger + daily biggest catch intact
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
 
 ## Latest Session (Mar 4, 2026, 16:23 WET)
 - Removed threshold-zone dependency from catch success and restored pure timing gameplay:

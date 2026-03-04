@@ -44,12 +44,12 @@ const FISH_TABLE: FishDef[] = [
 ];
 
 const MEMPOOL_FISH: MempoolFish[] = [
-  { emoji: "🐟", top: 18, sizeRem: 1.6, durationSec: 18, delaySec: -6, blurPx: 0.8, opacity: 0.25, direction: "ltr" },
-  { emoji: "🐠", top: 26, sizeRem: 2.2, durationSec: 24, delaySec: -11, blurPx: 1.1, opacity: 0.2, direction: "rtl" },
-  { emoji: "🐡", top: 38, sizeRem: 1.9, durationSec: 20, delaySec: -2, blurPx: 1.4, opacity: 0.22, direction: "ltr" },
-  { emoji: "🐟", top: 51, sizeRem: 2.4, durationSec: 27, delaySec: -15, blurPx: 2.2, opacity: 0.14, direction: "rtl" },
-  { emoji: "🐠", top: 63, sizeRem: 1.7, durationSec: 22, delaySec: -8, blurPx: 1.6, opacity: 0.19, direction: "ltr" },
-  { emoji: "🐟", top: 75, sizeRem: 1.5, durationSec: 26, delaySec: -19, blurPx: 1.7, opacity: 0.16, direction: "rtl" },
+  { emoji: "🐟", top: 16, sizeRem: 1.2, durationSec: 16, delaySec: -5, blurPx: 0.6, opacity: 0.28, direction: "ltr" },
+  { emoji: "🐠", top: 28, sizeRem: 1.7, durationSec: 21, delaySec: -12, blurPx: 1.2, opacity: 0.19, direction: "rtl" },
+  { emoji: "🐡", top: 42, sizeRem: 1.4, durationSec: 19, delaySec: -2, blurPx: 1.6, opacity: 0.22, direction: "ltr" },
+  { emoji: "🐟", top: 58, sizeRem: 1.8, durationSec: 24, delaySec: -15, blurPx: 1.8, opacity: 0.17, direction: "rtl" },
+  { emoji: "🐠", top: 71, sizeRem: 1.3, durationSec: 20, delaySec: -8, blurPx: 1.1, opacity: 0.2, direction: "ltr" },
+  { emoji: "🐟", top: 82, sizeRem: 1.1, durationSec: 25, delaySec: -17, blurPx: 1.4, opacity: 0.16, direction: "rtl" },
 ];
 
 const RARITY_CLASSES: Record<Rarity, string> = {
@@ -278,43 +278,85 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_20%_15%,#12264d_0%,#071224_45%,#040a16_100%)] text-slate-100">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,rgba(34,211,238,0.15),transparent_55%)]" />
-        {MEMPOOL_FISH.map((fish, index) => (
-          <span
-            key={`${fish.emoji}-${index}`}
-            className="absolute select-none"
-            style={{
-              top: `${fish.top}%`,
-              fontSize: `${fish.sizeRem}rem`,
-              opacity: fish.opacity,
-              filter: `blur(${fish.blurPx}px)`,
-              animation: `${fish.direction === "ltr" ? "zkSwimLTR" : "zkSwimRTL"} ${fish.durationSec}s linear ${fish.delaySec}s infinite`,
-              willChange: "transform",
-            }}
-          >
-            {fish.emoji}
-          </span>
-        ))}
-      </div>
-
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pb-32 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <header className="mb-4 flex flex-col gap-1 sm:mb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/90">ZKSink</p>
           <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">Reel Proofs. Sink Legends.</h1>
-          <p className="text-sm text-cyan-100/90 sm:text-base">
-            Pure timing mode is back. Catch only when the bite event flashes.
-          </p>
+          <p className="text-sm text-cyan-100/90 sm:text-base">Catch only when the bite event flashes.</p>
         </header>
 
         <section className="relative overflow-hidden rounded-3xl border border-cyan-300/35 bg-white/10 p-5 shadow-[0_24px_80px_rgba(8,145,178,0.2)] backdrop-blur-xl sm:p-8">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-cyan-200/10 blur-2xl" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_45%_60%,rgba(34,211,238,0.14),transparent_55%)]" />
           <div className="relative flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <span className="rounded-full border border-cyan-200/45 bg-cyan-100/15 px-3 py-1 text-xs font-semibold tracking-wide text-cyan-100">
                 {PHASE_LABELS[phase]}
               </span>
               <span className="font-mono text-xs text-cyan-100/80">Epoch: {todayKey || getLocalDayKey()}</span>
+            </div>
+
+            <div className="relative rounded-2xl border border-cyan-300/25 bg-slate-950/35 p-4 sm:p-6">
+              <div className="relative mx-auto grid max-w-3xl grid-cols-[auto_1fr_auto] items-end gap-4 sm:gap-8">
+                <div className="pb-1 text-center">
+                  <p className="font-mono text-[10px] tracking-[0.18em] text-cyan-200/75">CASTER</p>
+                  <div className="mt-2 rounded-lg border border-cyan-300/30 bg-slate-900/70 p-2 shadow-[0_0_18px_rgba(6,182,212,0.2)]">
+                    <div className="font-mono text-[8px] leading-[0.62rem] text-cyan-100 drop-shadow-[0_0_6px_rgba(125,211,252,0.5)]">
+                      <div>▗▆▖</div>
+                      <div>▐█▌</div>
+                      <div>▐▌▌</div>
+                      <div>▝ ▘</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative h-44 overflow-hidden rounded-[2.4rem] border border-cyan-300/35 bg-[radial-gradient(circle_at_45%_30%,rgba(34,211,238,0.35),rgba(8,47,73,0.95))] shadow-[inset_0_0_40px_rgba(8,145,178,0.35)] sm:h-48">
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(125,211,252,0.12),rgba(2,6,23,0.35))]" />
+                  <div className="absolute inset-x-0 top-2 h-10 bg-cyan-200/15 blur-xl" />
+                  {MEMPOOL_FISH.map((fish, index) => (
+                    <span
+                      key={`${fish.emoji}-${index}`}
+                      className="absolute left-0 select-none"
+                      style={{
+                        top: `${fish.top}%`,
+                        fontSize: `${fish.sizeRem}rem`,
+                        opacity: fish.opacity,
+                        filter: `blur(${fish.blurPx}px)`,
+                        animation: `${fish.direction === "ltr" ? "pondSwimLTR" : "pondSwimRTL"} ${fish.durationSec}s linear ${fish.delaySec}s infinite`,
+                        willChange: "transform",
+                      }}
+                    >
+                      {fish.emoji}
+                    </span>
+                  ))}
+                  <div className="absolute inset-x-0 bottom-2 text-center font-mono text-[10px] tracking-[0.2em] text-cyan-100/75">
+                    MEMPOOL POND
+                  </div>
+                </div>
+
+                <div className="pb-1 text-center">
+                  <p className="font-mono text-[10px] tracking-[0.18em] text-cyan-200/75">WATCHER</p>
+                  <div className="mt-2 rounded-lg border border-cyan-300/30 bg-slate-900/70 p-2 shadow-[0_0_18px_rgba(6,182,212,0.2)]">
+                    <div className="font-mono text-[8px] leading-[0.62rem] text-cyan-100 drop-shadow-[0_0_6px_rgba(125,211,252,0.5)]">
+                      <div>▗▆▖</div>
+                      <div>▐█▌</div>
+                      <div>▐▌▌</div>
+                      <div>▟▙▙</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pointer-events-none absolute left-[12%] top-[33%] h-[2px] w-[36%] origin-left -rotate-[12deg] bg-cyan-100/65" />
+                <span
+                  className={[
+                    "pointer-events-none absolute left-[46%] top-[46%] text-sm drop-shadow-[0_0_8px_rgba(251,113,133,0.7)]",
+                    phase === "line_out" ? "motion-safe:animate-pulse" : "",
+                    phase === "bite" ? "motion-safe:animate-bounce" : "",
+                  ].join(" ")}
+                >
+                  🔴
+                </span>
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -422,27 +464,27 @@ export default function Home() {
       </div>
 
       <style jsx global>{`
-        @keyframes zkSwimLTR {
+        @keyframes pondSwimLTR {
           0% {
-            transform: translateX(-12vw) translateY(0);
+            transform: translateX(-140%) translateY(0);
           }
           50% {
-            transform: translateX(52vw) translateY(-6px);
+            transform: translateX(145%) translateY(-4px);
           }
           100% {
-            transform: translateX(114vw) translateY(0);
+            transform: translateX(330%) translateY(0);
           }
         }
 
-        @keyframes zkSwimRTL {
+        @keyframes pondSwimRTL {
           0% {
-            transform: translateX(112vw) translateY(0) scaleX(-1);
+            transform: translateX(320%) translateY(0) scaleX(-1);
           }
           50% {
-            transform: translateX(48vw) translateY(6px) scaleX(-1);
+            transform: translateX(135%) translateY(5px) scaleX(-1);
           }
           100% {
-            transform: translateX(-14vw) translateY(0) scaleX(-1);
+            transform: translateX(-140%) translateY(0) scaleX(-1);
           }
         }
       `}</style>
