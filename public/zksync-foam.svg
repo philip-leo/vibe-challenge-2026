@@ -1,0 +1,30 @@
+<svg width="560" height="240" viewBox="0 0 560 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="zkLeft" x1="30" y1="210" x2="290" y2="24" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+    <linearGradient id="zkRight" x1="310" y1="205" x2="530" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#7DD3FC"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <path
+    d="M28 122L206 16V84H340L168 220V152H28V122Z"
+    fill="url(#zkLeft)"
+    filter="url(#glow)"
+  />
+  <path
+    d="M532 118L352 224V156H220L392 20V88H532V118Z"
+    fill="url(#zkRight)"
+    filter="url(#glow)"
+  />
+</svg>

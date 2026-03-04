@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type Phase = "idle" | "line_out" | "bite" | "caught" | "missed";
@@ -13,6 +14,7 @@ type Catch = {
   rarity: Rarity;
   caughtAt: number;
   txHash: string;
+  isZeek?: boolean;
 };
 
 type FishDef = {
@@ -93,6 +95,23 @@ function makeTxHash(seed: number) {
   return `0x${seed.toString(16)}${entropy}`.slice(0, 18);
 }
 
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function createZeekCatch() {
+  const caughtAt = Date.now();
+  return {
+    name: "Zeek Cat",
+    emoji: "🐱",
+    rarity: "legendary" as const,
+    weightKg: 1000,
+    caughtAt,
+    txHash: makeTxHash(caughtAt),
+    isZeek: true,
+  } satisfies Catch;
+}
+
 function pickFish() {
   const totalWeight = FISH_TABLE.reduce((sum, fish) => sum + fish.weight, 0);
   let roll = Math.random() * totalWeight;
@@ -147,6 +166,8 @@ export default function Home() {
   const biteExpireTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ledgerCommitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const successfulCatchCountRef = useRef(0);
+  const nextZeekCatchAtRef = useRef(randomInt(3, 5));
 
   const canCast = phase === "idle";
   const canReel = phase === "line_out" || phase === "bite";
@@ -244,9 +265,16 @@ export default function Home() {
       clearTimer(biteExpireTimeoutRef.current);
       biteExpireTimeoutRef.current = null;
 
-      const caughtFish = pickFish();
+      successfulCatchCountRef.current += 1;
+      const shouldDropZeek = successfulCatchCountRef.current >= nextZeekCatchAtRef.current;
+      const caughtFish: Catch = shouldDropZeek ? createZeekCatch() : pickFish();
+      if (shouldDropZeek) {
+        nextZeekCatchAtRef.current = successfulCatchCountRef.current + randomInt(3, 5);
+      }
       setPhase("caught");
-      setStatusMessage("Catch locked. Verifying proof...");
+      setStatusMessage(
+        caughtFish.isZeek ? "Legendary signal! Zeek Cat hooked at 1000.00 kg." : "Catch locked. Verifying proof..."
+      );
       setMissCue(false);
       setCatchSpotlight(caughtFish);
 
@@ -308,7 +336,10 @@ export default function Home() {
 
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pb-32 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <header className="mb-4 flex flex-col gap-1 sm:mb-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/90">ZKSink</p>
+          <div className="mb-1 flex items-center gap-3">
+            <Image src="/zksync-foam.svg" alt="ZKsync Logo" width={72} height={40} className="h-9 w-auto drop-shadow-[0_0_14px_rgba(56,189,248,0.45)]" />
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/90">ZKSink</p>
+          </div>
           <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">Reel Proofs. Sink Legends.</h1>
           <p className="text-sm text-cyan-100/90 sm:text-base">Catch only when the bite event flashes.</p>
         </header>
@@ -320,9 +351,15 @@ export default function Home() {
             <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[radial-gradient(circle_at_50%_52%,rgba(16,185,129,0.3),rgba(8,47,73,0.2),transparent_72%)] px-4">
               <div className="w-full max-w-md rounded-3xl border border-emerald-200/70 bg-emerald-400/20 px-6 py-5 text-center shadow-[0_0_48px_rgba(16,185,129,0.55)] backdrop-blur motion-safe:animate-[catchSpotlight_520ms_ease-in-out_infinite]">
                 <p className="font-mono text-xs font-semibold tracking-[0.2em] text-emerald-100">CATCH CONFIRMED</p>
-                <div className="mt-3 text-6xl">{catchSpotlight.emoji}</div>
+                {catchSpotlight.isZeek ? (
+                  <div className="mx-auto mt-3 w-fit rounded-2xl border border-emerald-200/70 bg-slate-950/25 p-2">
+                    <Image src="/zeek-cat.svg" alt="Zeek Cat" width={120} height={120} className="h-24 w-24 object-contain sm:h-28 sm:w-28" />
+                  </div>
+                ) : (
+                  <div className="mt-3 text-6xl">{catchSpotlight.emoji}</div>
+                )}
                 <p className="mt-2 text-2xl font-black text-white">{catchSpotlight.name}</p>
-                <p className="font-mono text-sm text-emerald-100">{catchSpotlight.weightKg.toFixed(2)} kg codfish secured</p>
+                <p className="font-mono text-sm text-emerald-100">{catchSpotlight.weightKg.toFixed(2)} kg catch secured</p>
               </div>
             </div>
           ) : null}
@@ -360,13 +397,8 @@ export default function Home() {
               <div className="relative mx-auto grid max-w-3xl grid-cols-[auto_1fr_auto] items-end gap-4 sm:gap-8">
                 <div className="pb-1 text-center">
                   <p className="font-mono text-[10px] tracking-[0.18em] text-cyan-200/75">CASTER</p>
-                  <div className="mt-2 rounded-lg border border-cyan-300/30 bg-slate-900/70 p-2 shadow-[0_0_18px_rgba(6,182,212,0.2)]">
-                    <div className="font-mono text-[8px] leading-[0.62rem] text-cyan-100 drop-shadow-[0_0_6px_rgba(125,211,252,0.5)]">
-                      <div>▗▆▖</div>
-                      <div>▐█▌</div>
-                      <div>▐▌▌</div>
-                      <div>▝ ▘</div>
-                    </div>
+                  <div className="mt-2 rounded-xl border border-cyan-300/35 bg-slate-900/70 p-1.5 shadow-[0_0_20px_rgba(59,130,246,0.28)]">
+                    <Image src="/zeek-cat.svg" alt="Zeek Cat Caster" width={76} height={76} className="h-16 w-16 object-contain sm:h-[4.5rem] sm:w-[4.5rem]" />
                   </div>
                 </div>
 
@@ -410,6 +442,9 @@ export default function Home() {
                 </div>
 
                 <div className="pointer-events-none absolute left-[12%] top-[33%] h-[2px] w-[36%] origin-left -rotate-[12deg] bg-cyan-100/65" />
+                <div className="pointer-events-none absolute left-[5%] top-[12%] h-[4px] w-[47%] origin-left -rotate-[16deg] rounded-full bg-gradient-to-r from-amber-200/90 via-orange-200/85 to-cyan-100/85 shadow-[0_0_14px_rgba(251,191,36,0.55)]" />
+                <div className="pointer-events-none absolute left-[48.2%] top-[18.5%] h-[30%] w-[1.5px] rounded-full bg-cyan-100/70 shadow-[0_0_8px_rgba(125,211,252,0.6)]" />
+                <span className="pointer-events-none absolute left-[47.7%] top-[47%] text-[13px] drop-shadow-[0_0_6px_rgba(125,211,252,0.7)]">🪝</span>
                 <span
                   className={[
                     "pointer-events-none absolute left-[46%] top-[46%] text-sm drop-shadow-[0_0_8px_rgba(251,113,133,0.7)]",
@@ -453,7 +488,11 @@ export default function Home() {
                     key={`${entry.txHash}-${entry.caughtAt}`}
                     className="grid grid-cols-[auto_1fr_auto] items-center gap-2 rounded-xl border border-cyan-300/20 bg-slate-950/40 px-3 py-2"
                   >
-                    <span className="text-lg">{entry.emoji}</span>
+                    {entry.isZeek ? (
+                      <Image src="/zeek-cat.svg" alt="Zeek Cat" width={34} height={34} className="h-8 w-8 object-contain" />
+                    ) : (
+                      <span className="text-lg">{entry.emoji}</span>
+                    )}
                     <div className="min-w-0">
                       <p className="truncate font-mono text-xs text-cyan-100">
                         {formatCatchTime(entry.caughtAt, true)} | {entry.name}
@@ -480,7 +519,11 @@ export default function Home() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-cyan-100">Biggest Catch of the Day</h2>
             {dailyBest ? (
               <div className="mt-3 flex items-start gap-3">
-                <span className="text-3xl">{dailyBest.emoji}</span>
+                {dailyBest.isZeek ? (
+                  <Image src="/zeek-cat.svg" alt="Zeek Cat" width={52} height={52} className="h-12 w-12 object-contain" />
+                ) : (
+                  <span className="text-3xl">{dailyBest.emoji}</span>
+                )}
                 <div>
                   <p className="text-lg font-bold text-white">{dailyBest.name}</p>
                   <p className="font-mono text-sm text-cyan-100">{dailyBest.weightKg.toFixed(2)} kg</p>

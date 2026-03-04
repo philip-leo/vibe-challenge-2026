@@ -3,6 +3,19 @@
 ## Current Status
 Fishing game is live on `main`. New centered pond scene is implemented locally and build-passing.
 
+## Latest Session (Mar 4, 2026, 16:46 WET)
+- Added two brand assets and integrated them into gameplay visuals:
+  - top header now includes a ZKsync logo mark (`public/zksync-foam.svg`)
+  - caster icon now uses Zeek Cat logo (`public/zeek-cat.svg`)
+- Upgraded pond composition:
+  - added clearer stylized rod + line + hook hanging over the pond
+- Added special catch mechanic:
+  - Zeek Cat appears every ~3rd to 5th successful catch
+  - Zeek Cat catch weight is fixed at `1000.00 kg`
+  - Zeek Cat appears in catch spotlight, ledger, and daily-best card with logo image
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
+
 ## Latest Session (Mar 4, 2026, 16:40 WET)
 - Added catch/miss outcome cinematics with no mechanic changes:
   - successful catch now shows a front-and-center spotlight card before ledger commit
