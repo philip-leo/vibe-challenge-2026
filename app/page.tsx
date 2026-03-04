@@ -442,7 +442,7 @@ export default function Home() {
         </section>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-cyan-300/30 bg-slate-950/85 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 shadow-[0_-8px_32px_rgba(8,145,178,0.2)] backdrop-blur md:sticky md:mx-auto md:mb-6 md:max-w-5xl md:rounded-2xl md:border md:px-6 md:py-4">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-cyan-300/30 bg-slate-950/85 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 shadow-[0_-8px_32px_rgba(8,145,178,0.2)] backdrop-blur md:px-6 md:pt-4">
         <div className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-3">
           <button
             type="button"
