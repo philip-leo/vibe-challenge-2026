@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 type Phase = "idle" | "line_out" | "bite" | "caught" | "missed";
 type Rarity = "common" | "rare" | "legendary";
+type TargetZone = { min: number; max: number };
 
 type Catch = {
   name: string;
@@ -51,6 +52,17 @@ const PHASE_TEXT_CLASSES: Record<Phase, string> = {
   caught: "text-emerald-200",
   missed: "text-rose-200",
 };
+
+const TARGET_ZONE_HEIGHT = 16;
+
+function createTargetZone(): TargetZone {
+  const center = 30 + Math.random() * 40;
+  const half = TARGET_ZONE_HEIGHT / 2;
+  return {
+    min: Math.max(8, center - half),
+    max: Math.min(92, center + half),
+  };
+}
 
 function getLocalDayKey() {
   const now = new Date();
@@ -106,10 +118,14 @@ export default function Home() {
   const [dailyBest, setDailyBest] = useState<Catch | null>(null);
   const [todayKey, setTodayKey] = useState("");
   const [isNewRecord, setIsNewRecord] = useState(false);
+  const [linePosition, setLinePosition] = useState(50);
+  const [targetZone, setTargetZone] = useState<TargetZone>(() => createTargetZone());
 
   const biteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const biteExpireTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lineMotionRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lineVelocityRef = useRef(1.4);
 
   const isCasting = phase === "line_out" || phase === "bite";
   const canReel = phase === "line_out" || phase === "bite";
@@ -122,10 +138,18 @@ export default function Home() {
     }
   };
 
+  const clearLineMotion = () => {
+    if (lineMotionRef.current) {
+      clearInterval(lineMotionRef.current);
+      lineMotionRef.current = null;
+    }
+  };
+
   const clearAllTimers = () => {
     clearTimer(biteTimeoutRef.current);
     clearTimer(biteExpireTimeoutRef.current);
     clearTimer(resetTimeoutRef.current);
+    clearLineMotion();
     biteTimeoutRef.current = null;
     biteExpireTimeoutRef.current = null;
     resetTimeoutRef.current = null;
@@ -137,6 +161,7 @@ export default function Home() {
       setPhase("idle");
       setStatusMessage("Tap Cast to drop your line.");
       setIsNewRecord(false);
+      setLinePosition(50);
     }, delayMs);
   };
 
@@ -166,17 +191,20 @@ export default function Home() {
 
     clearAllTimers();
     setPhase("line_out");
-    setStatusMessage("Line is out... wait for a bite.");
+    setStatusMessage("Line is out... watch the bobber.");
     setIsNewRecord(false);
+    setLinePosition(44 + Math.random() * 12);
+    setTargetZone(createTargetZone());
+    lineVelocityRef.current = Math.random() > 0.5 ? 1.4 : -1.4;
 
     const biteDelayMs = 800 + Math.floor(Math.random() * 1400);
     biteTimeoutRef.current = setTimeout(() => {
       setPhase("bite");
-      setStatusMessage("Bite! Tap Reel now!");
+      setStatusMessage("Bite! Tap Catch while the bobber is in the green zone!");
 
       biteExpireTimeoutRef.current = setTimeout(() => {
         setPhase("missed");
-        setStatusMessage("Too slow. That fish escaped.");
+        setStatusMessage("Too slow. The fish escaped.");
         scheduleReset(1400);
       }, 1400);
     }, biteDelayMs);
@@ -194,6 +222,15 @@ export default function Home() {
       clearTimer(biteExpireTimeoutRef.current);
       biteExpireTimeoutRef.current = null;
 
+      const inTargetZone = linePosition >= targetZone.min && linePosition <= targetZone.max;
+      if (!inTargetZone) {
+        setPhase("missed");
+        setStatusMessage("Close, but outside the green zone. Try timing your catch.");
+        setIsNewRecord(false);
+        scheduleReset(1500);
+        return;
+      }
+
       const caughtFish = pickFish();
       setLatestCatch(caughtFish);
       setPhase("caught");
@@ -208,6 +245,38 @@ export default function Home() {
     setIsNewRecord(false);
     scheduleReset(1400);
   };
+
+  useEffect(() => {
+    if (phase !== "line_out" && phase !== "bite") {
+      clearLineMotion();
+      return;
+    }
+
+    clearLineMotion();
+    lineMotionRef.current = setInterval(() => {
+      setLinePosition((prev) => {
+        const phaseSpeed = phase === "bite" ? 1.55 : 1.2;
+        let next = prev + lineVelocityRef.current * phaseSpeed;
+
+        if (next >= 92) {
+          next = 92;
+          lineVelocityRef.current = -(1.1 + Math.random() * 0.9);
+        } else if (next <= 8) {
+          next = 8;
+          lineVelocityRef.current = 1.1 + Math.random() * 0.9;
+        } else {
+          lineVelocityRef.current += (Math.random() - 0.5) * 0.25;
+          lineVelocityRef.current = Math.max(-2.2, Math.min(2.2, lineVelocityRef.current));
+        }
+
+        return next;
+      });
+    }, 70);
+
+    return () => {
+      clearLineMotion();
+    };
+  }, [phase]);
 
   useEffect(() => {
     const currentDayKey = getLocalDayKey();
@@ -268,8 +337,44 @@ export default function Home() {
               <p className={`text-lg font-semibold sm:text-xl ${phaseTextClass}`}>{statusMessage}</p>
             </div>
 
+            <div className="rounded-2xl border border-white/20 bg-slate-900/20 p-3 sm:p-4">
+              <div className="flex items-center justify-between text-xs font-semibold text-cyan-100/90">
+                <span>Line Visualizer</span>
+                <span>{phase === "bite" ? "Target Active" : "Standby"}</span>
+              </div>
+
+              <div className="mx-auto mt-3 flex items-center justify-center gap-5">
+                <div className="text-2xl">🎣</div>
+                <div className="relative h-44 w-20">
+                  <div className="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 rounded-full bg-white/55" />
+
+                  <div
+                    className={`absolute left-1/2 w-14 -translate-x-1/2 rounded-lg border transition-colors ${
+                      phase === "bite" ? "border-emerald-200 bg-emerald-300/35" : "border-white/30 bg-white/15"
+                    }`}
+                    style={{
+                      top: `${targetZone.min}%`,
+                      height: `${targetZone.max - targetZone.min}%`,
+                    }}
+                  />
+
+                  <span
+                    className="absolute left-1/2 -translate-x-1/2 text-xl transition-[top] duration-75 ease-linear"
+                    style={{ top: `calc(${linePosition}% - 0.65rem)` }}
+                  >
+                    🔴
+                  </span>
+                </div>
+                <div className="text-2xl">🌊</div>
+              </div>
+
+              <p className="mt-2 text-center text-xs text-cyan-100/90">
+                Catch only counts if the bobber is inside the green zone.
+              </p>
+            </div>
+
             <p className="max-w-2xl text-sm text-cyan-100/95 sm:text-base">
-              Pro tip: hit <strong>Reel</strong> only when the line gets a bite.
+              Pro tip: hit <strong>Catch!</strong> only when the line gets a bite.
             </p>
           </div>
         </section>
@@ -340,7 +445,7 @@ export default function Home() {
             disabled={!canReel}
             className="h-14 rounded-xl bg-emerald-600 px-4 text-lg font-semibold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-300 disabled:text-emerald-50"
           >
-            Reel
+            {phase === "bite" ? "Catch!" : "Reel"}
           </button>
         </div>
       </div>

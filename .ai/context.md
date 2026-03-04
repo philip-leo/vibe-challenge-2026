@@ -1,7 +1,21 @@
 # Project Context
 
 ## Current Status
-Fishing game prompt implementation is in progress on `main` and build is passing.
+Fishing game is live on `main`. A visual catch-threshold upgrade is implemented locally and build-passing.
+
+## Latest Session (Mar 4, 2026, 16:11 WET)
+- Added a visual fishing-line timing mini-game to `app/page.tsx`:
+  - moving bobber indicator on a vertical line
+  - highlighted target threshold zone
+  - bite state now requires pressing catch while bobber is inside zone
+- Updated interaction copy and CTA:
+  - bite prompt now explains zone timing
+  - `Reel` button becomes `Catch!` during bite window
+- Outcome logic updated:
+  - bite + outside threshold => miss
+  - bite + inside threshold => fish catch
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
 
 ## Latest Session (Mar 4, 2026, 16:04 WET)
 - Implemented a full mobile-first fishing game in `app/page.tsx`.
