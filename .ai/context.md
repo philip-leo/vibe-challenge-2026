@@ -3,6 +3,16 @@
 ## Current Status
 Fishing game is live on `main`. New centered pond scene is implemented locally and build-passing.
 
+## Latest Session (Mar 4, 2026, 16:34 WET)
+- Upgraded bite alert visibility with no logic changes:
+  - full-screen pulse flash during `bite`
+  - pond-local glow pulse during `bite`
+  - animated `BITE!` badge on scene card
+  - `Catch!/Reel` button now strongly pulses and glows on `bite`
+- State machine and game rules unchanged (visual signal only).
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
+
 ## Latest Session (Mar 4, 2026, 16:31 WET)
 - Verified production HTML already contains the centered pond scene and updated copy.
 - Applied desktop controls fix:

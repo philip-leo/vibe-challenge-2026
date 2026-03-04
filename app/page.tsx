@@ -147,6 +147,7 @@ export default function Home() {
 
   const isCasting = phase === "line_out" || phase === "bite";
   const canReel = phase === "line_out" || phase === "bite";
+  const isBiteActive = phase === "bite";
 
   const phaseTextClass = useMemo(() => PHASE_TEXT_CLASSES[phase], [phase]);
 
@@ -278,6 +279,10 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_20%_15%,#12264d_0%,#071224_45%,#040a16_100%)] text-slate-100">
+      {isBiteActive ? (
+        <div className="pointer-events-none absolute inset-0 z-20 bg-[radial-gradient(circle_at_50%_58%,rgba(251,191,36,0.34),rgba(244,63,94,0.24),transparent_68%)] motion-safe:animate-[biteFlash_340ms_ease-in-out_infinite]" />
+      ) : null}
+
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 pb-32 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         <header className="mb-4 flex flex-col gap-1 sm:mb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200/90">ZKSink</p>
@@ -296,7 +301,17 @@ export default function Home() {
               <span className="font-mono text-xs text-cyan-100/80">Epoch: {todayKey || getLocalDayKey()}</span>
             </div>
 
-            <div className="relative rounded-2xl border border-cyan-300/25 bg-slate-950/35 p-4 sm:p-6">
+            <div
+              className={[
+                "relative rounded-2xl border border-cyan-300/25 bg-slate-950/35 p-4 sm:p-6",
+                isBiteActive ? "ring-2 ring-amber-300/90 shadow-[0_0_36px_rgba(251,191,36,0.65)]" : "",
+              ].join(" ")}
+            >
+              {isBiteActive ? (
+                <div className="pointer-events-none absolute -top-2 right-3 rounded-full border border-amber-200/85 bg-rose-500/85 px-3 py-1 font-mono text-[11px] font-bold tracking-[0.22em] text-amber-100 motion-safe:animate-[biteBadge_420ms_steps(2,end)_infinite]">
+                  BITE!
+                </div>
+              ) : null}
               <div className="relative mx-auto grid max-w-3xl grid-cols-[auto_1fr_auto] items-end gap-4 sm:gap-8">
                 <div className="pb-1 text-center">
                   <p className="font-mono text-[10px] tracking-[0.18em] text-cyan-200/75">CASTER</p>
@@ -311,6 +326,9 @@ export default function Home() {
                 </div>
 
                 <div className="relative h-44 overflow-hidden rounded-[2.4rem] border border-cyan-300/35 bg-[radial-gradient(circle_at_45%_30%,rgba(34,211,238,0.35),rgba(8,47,73,0.95))] shadow-[inset_0_0_40px_rgba(8,145,178,0.35)] sm:h-48">
+                  {isBiteActive ? (
+                    <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_48%,rgba(251,191,36,0.42),transparent_58%)] motion-safe:animate-[pondAlert_360ms_ease-in-out_infinite]" />
+                  ) : null}
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(125,211,252,0.12),rgba(2,6,23,0.35))]" />
                   <div className="absolute inset-x-0 top-2 h-10 bg-cyan-200/15 blur-xl" />
                   {MEMPOOL_FISH.map((fish, index) => (
@@ -456,7 +474,12 @@ export default function Home() {
             type="button"
             onClick={handleReel}
             disabled={!canReel}
-            className="h-14 rounded-xl border border-emerald-300/40 bg-emerald-500/80 px-4 text-lg font-semibold text-emerald-950 transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-900/40 disabled:text-emerald-200/60"
+            className={[
+              "h-14 rounded-xl border border-emerald-300/40 bg-emerald-500/80 px-4 text-lg font-semibold text-emerald-950 transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:border-emerald-300/20 disabled:bg-emerald-900/40 disabled:text-emerald-200/60",
+              isBiteActive
+                ? "border-amber-200 bg-amber-300 text-amber-950 shadow-[0_0_26px_rgba(251,191,36,0.8)] motion-safe:animate-[reelSignal_360ms_ease-in-out_infinite]"
+                : "",
+            ].join(" ")}
           >
             {phase === "bite" ? "Catch!" : "Reel"}
           </button>
@@ -485,6 +508,54 @@ export default function Home() {
           }
           100% {
             transform: translateX(-140%) translateY(0) scaleX(-1);
+          }
+        }
+
+        @keyframes biteFlash {
+          0% {
+            opacity: 0.15;
+          }
+          50% {
+            opacity: 0.62;
+          }
+          100% {
+            opacity: 0.15;
+          }
+        }
+
+        @keyframes pondAlert {
+          0% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 0.9;
+          }
+          100% {
+            opacity: 0.2;
+          }
+        }
+
+        @keyframes reelSignal {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.06);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
+
+        @keyframes biteBadge {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.4;
+          }
+          100% {
+            opacity: 1;
           }
         }
       `}</style>
