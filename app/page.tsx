@@ -140,12 +140,15 @@ export default function Home() {
   const [ledgerEntries, setLedgerEntries] = useState<Catch[]>([]);
   const [todayKey, setTodayKey] = useState("");
   const [isNewRecord, setIsNewRecord] = useState(false);
+  const [catchSpotlight, setCatchSpotlight] = useState<Catch | null>(null);
+  const [missCue, setMissCue] = useState(false);
 
   const biteTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const biteExpireTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ledgerCommitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const isCasting = phase === "line_out" || phase === "bite";
+  const canCast = phase === "idle";
   const canReel = phase === "line_out" || phase === "bite";
   const isBiteActive = phase === "bite";
 
@@ -160,9 +163,11 @@ export default function Home() {
   const clearAllTimers = () => {
     clearTimer(biteTimeoutRef.current);
     clearTimer(biteExpireTimeoutRef.current);
+    clearTimer(ledgerCommitTimeoutRef.current);
     clearTimer(resetTimeoutRef.current);
     biteTimeoutRef.current = null;
     biteExpireTimeoutRef.current = null;
+    ledgerCommitTimeoutRef.current = null;
     resetTimeoutRef.current = null;
   };
 
@@ -172,6 +177,8 @@ export default function Home() {
       setPhase("idle");
       setStatusMessage("Tap Cast to drop your line.");
       setIsNewRecord(false);
+      setCatchSpotlight(null);
+      setMissCue(false);
     }, delayMs);
   };
 
@@ -199,7 +206,7 @@ export default function Home() {
   };
 
   const handleCast = () => {
-    if (isCasting) {
+    if (!canCast) {
       return;
     }
 
@@ -207,6 +214,8 @@ export default function Home() {
     setPhase("line_out");
     setStatusMessage("Line is out... waiting for bite signal.");
     setIsNewRecord(false);
+    setCatchSpotlight(null);
+    setMissCue(false);
 
     const biteDelayMs = 800 + Math.floor(Math.random() * 1400);
     biteTimeoutRef.current = setTimeout(() => {
@@ -215,8 +224,10 @@ export default function Home() {
 
       biteExpireTimeoutRef.current = setTimeout(() => {
         setPhase("missed");
-        setStatusMessage("Too slow. The fish escaped.");
-        scheduleReset(1300);
+        setStatusMessage("Oh no. The fish slipped away.");
+        setCatchSpotlight(null);
+        setMissCue(true);
+        scheduleReset(1600);
       }, 1400);
     }, biteDelayMs);
   };
@@ -235,17 +246,29 @@ export default function Home() {
 
       const caughtFish = pickFish();
       setPhase("caught");
-      setStatusMessage(`Catch verified: ${caughtFish.name} (${caughtFish.weightKg.toFixed(2)} kg).`);
-      recordLedgerEntry(caughtFish);
-      saveBestCatch(caughtFish);
-      scheduleReset(1800);
+      setStatusMessage("Catch locked. Verifying proof...");
+      setMissCue(false);
+      setCatchSpotlight(caughtFish);
+
+      clearTimer(ledgerCommitTimeoutRef.current);
+      ledgerCommitTimeoutRef.current = setTimeout(() => {
+        recordLedgerEntry(caughtFish);
+        saveBestCatch(caughtFish);
+        setStatusMessage(`Catch verified: ${caughtFish.name} (${caughtFish.weightKg.toFixed(2)} kg).`);
+        setCatchSpotlight(null);
+        ledgerCommitTimeoutRef.current = null;
+      }, 900);
+
+      scheduleReset(2100);
       return;
     }
 
     setPhase("missed");
-    setStatusMessage("Too early. You reeled in empty water.");
+    setStatusMessage("Oh no. Too early and the fish got spooked.");
     setIsNewRecord(false);
-    scheduleReset(1300);
+    setCatchSpotlight(null);
+    setMissCue(true);
+    scheduleReset(1600);
   };
 
   useEffect(() => {
@@ -293,6 +316,28 @@ export default function Home() {
         <section className="relative overflow-hidden rounded-3xl border border-cyan-300/35 bg-white/10 p-5 shadow-[0_24px_80px_rgba(8,145,178,0.2)] backdrop-blur-xl sm:p-8">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-cyan-200/10 blur-2xl" />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_45%_60%,rgba(34,211,238,0.14),transparent_55%)]" />
+          {catchSpotlight ? (
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[radial-gradient(circle_at_50%_52%,rgba(16,185,129,0.3),rgba(8,47,73,0.2),transparent_72%)] px-4">
+              <div className="w-full max-w-md rounded-3xl border border-emerald-200/70 bg-emerald-400/20 px-6 py-5 text-center shadow-[0_0_48px_rgba(16,185,129,0.55)] backdrop-blur motion-safe:animate-[catchSpotlight_520ms_ease-in-out_infinite]">
+                <p className="font-mono text-xs font-semibold tracking-[0.2em] text-emerald-100">CATCH CONFIRMED</p>
+                <div className="mt-3 text-6xl">{catchSpotlight.emoji}</div>
+                <p className="mt-2 text-2xl font-black text-white">{catchSpotlight.name}</p>
+                <p className="font-mono text-sm text-emerald-100">{catchSpotlight.weightKg.toFixed(2)} kg codfish secured</p>
+              </div>
+            </div>
+          ) : null}
+
+          {missCue ? (
+            <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-[radial-gradient(circle_at_50%_55%,rgba(251,113,133,0.36),rgba(127,29,29,0.25),transparent_70%)] px-4">
+              <div className="w-full max-w-md rounded-3xl border border-rose-300/70 bg-rose-900/55 px-6 py-5 text-center shadow-[0_0_44px_rgba(244,63,94,0.58)] backdrop-blur motion-safe:animate-[missPulse_500ms_ease-in-out_infinite]">
+                <p className="font-mono text-xs font-semibold tracking-[0.2em] text-rose-100">FAILED HOOK</p>
+                <p className="mt-2 text-3xl">🥲</p>
+                <p className="mt-2 text-xl font-black text-rose-100">OH NO, YOU MISSED IT</p>
+                <p className="font-mono text-xs text-rose-200">That fish said goodbye. Cast again.</p>
+              </div>
+            </div>
+          ) : null}
+
           <div className="relative flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <span className="rounded-full border border-cyan-200/45 bg-cyan-100/15 px-3 py-1 text-xs font-semibold tracking-wide text-cyan-100">
@@ -465,7 +510,7 @@ export default function Home() {
           <button
             type="button"
             onClick={handleCast}
-            disabled={isCasting}
+            disabled={!canCast}
             className="h-14 rounded-xl border border-cyan-300/40 bg-cyan-500/80 px-4 text-lg font-semibold text-cyan-950 transition-colors hover:bg-cyan-400 disabled:cursor-not-allowed disabled:border-cyan-300/20 disabled:bg-cyan-900/40 disabled:text-cyan-200/60"
           >
             Cast
@@ -556,6 +601,36 @@ export default function Home() {
           }
           100% {
             opacity: 1;
+          }
+        }
+
+        @keyframes catchSpotlight {
+          0% {
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+          }
+          50% {
+            transform: scale(1.04);
+            box-shadow: 0 0 52px rgba(16, 185, 129, 0.82);
+          }
+          100% {
+            transform: scale(1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+          }
+        }
+
+        @keyframes missPulse {
+          0% {
+            transform: scale(1);
+            opacity: 0.85;
+          }
+          50% {
+            transform: scale(1.03);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 0.85;
           }
         }
       `}</style>

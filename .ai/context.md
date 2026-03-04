@@ -3,6 +3,18 @@
 ## Current Status
 Fishing game is live on `main`. New centered pond scene is implemented locally and build-passing.
 
+## Latest Session (Mar 4, 2026, 16:40 WET)
+- Added catch/miss outcome cinematics with no mechanic changes:
+  - successful catch now shows a front-and-center spotlight card before ledger commit
+  - miss now shows bold red/sad failure card for clearer feedback
+- Catch flow update:
+  - catch is displayed first
+  - ledger entry and daily-best update are committed after a short delay
+- UX guardrail:
+  - `Cast` button is now active only in `idle` to prevent interrupting outcome animations
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
+
 ## Latest Session (Mar 4, 2026, 16:34 WET)
 - Upgraded bite alert visibility with no logic changes:
   - full-screen pulse flash during `bite`
