@@ -1,7 +1,21 @@
 # Project Context
 
 ## Current Status
-Fishing game is live on `main`. A visual catch-threshold upgrade is implemented locally and build-passing.
+Fishing game is live on `main`. Visual polish pass shipped locally: pure timing restored + Mempool Aquarium + ZK Ledger.
+
+## Latest Session (Mar 4, 2026, 16:23 WET)
+- Removed threshold-zone dependency from catch success and restored pure timing gameplay:
+  - bite + quick catch = success
+  - early/late catch = miss
+- Implemented **Mempool Aquarium** background:
+  - low-opacity, blurred fish emojis drifting behind frosted cards
+  - CSS keyframes (`zkSwimLTR`, `zkSwimRTL`) for continuous ambient motion
+- Implemented **ZK Ledger** panel:
+  - replaced "Latest Catch" style block with transaction-like rows
+  - row fields: timestamp, emoji/species, tx hash, weight, and `Verified` status badge
+  - monospace styling for ledger/tx metadata
+- Build gate result:
+  - `npm run build` succeeded on Next.js 16.1.6
 
 ## Latest Session (Mar 4, 2026, 16:11 WET)
 - Added a visual fishing-line timing mini-game to `app/page.tsx`:
